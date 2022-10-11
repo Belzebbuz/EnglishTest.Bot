@@ -23,6 +23,8 @@ public class AppUser : BaseEntity
 	public Role Role { get; set; }
 	public List<Word> Words { get; private set; }
 	public List<Test> Tests { get; set; }
+
+
 	public void AddNewWord(string enVersion, string ruVersion)
 	{
 		if (Words == null)
@@ -66,6 +68,32 @@ public class AppUser : BaseEntity
 		Tests.Add(test);
 		return test;
 	}
+	public Test GenerateTestFromLastWords(int count)
+	{
+		if (Words == null)
+			throw new ArgumentNullException(nameof(Words));
+
+		if (Tests == null)
+			Tests = new();
+
+		var testWords = Words.OrderByDescending(x => x.CreateDate).Take(count).Shuffle();
+		var questions = new List<Question>();
+		int orderNumber = 1;
+		foreach (var word in testWords)
+		{
+			var question = new Question() { Word = word };
+			question.SetOrderNumber(orderNumber);
+			questions.Add(question);
+			orderNumber++;
+		}
+		var test = new Test()
+		{
+			User = this,
+			Questions = questions
+		};
+		Tests.Add(test);
+		return test;
+	}
 	public void MarkTestAsStarted(Guid id)
 	{
 		Test? test = GetTestById(id);
@@ -76,6 +104,21 @@ public class AppUser : BaseEntity
 		Test? test = GetTestById(id);
 		test.MarkAsDone();
 	}
+	public List<string> GetAllResults()
+	{
+		if (Tests == null)
+			throw new ArgumentNullException(nameof(Tests));
+		if (!Tests.Any(x => x.Done))
+			throw new Exception("Нет законченных тестов");
+
+		var results = new List<string>();
+		var tests = Tests.OrderByDescending(x => x.CreateDate).Where(x => x.Done).ToList();
+		foreach (var test in Tests.Where(x => x.Done))
+		{
+			results.Add(GetTestResult(test.Id));
+		}
+		return results;
+	}
 	public string GetTestResult(Guid id)
 	{
 		Test? test = GetTestById(id);
@@ -84,16 +127,20 @@ public class AppUser : BaseEntity
 
 		var result = new StringBuilder();
 		var wrongAnswers = test.Questions.OrderBy(x => x.OrderNumber).Where(x => !x.IsCorrect);
+		var rightAnswers = test.Questions.Count - wrongAnswers.Count();
+		var time = test.EndTime - test.StartTime;
+		result.AppendLine($"<b>Попытка от: {test.StartTime.ToString("f")}\nРезультат: {rightAnswers} из {test.Questions.Count}</b>\n" +
+			$"Время: {time.ToString(@"hh\:mm\:ss")}\n");
 		if (wrongAnswers.Any())
 		{
+			result.AppendLine("Ошибки:");
 			foreach (var question in wrongAnswers)
 			{
 				result.AppendLine(question.ConfigureResultString());
 			}
 		}
-		var rightAnswers = test.Questions.Count - wrongAnswers.Count();
-		var time = test.EndTime - test.StartTime;
-		result.AppendLine($"<b>Результат: {rightAnswers} из {test.Questions.Count}</b>\n Время:{time}");
+		
+		
 		return result.ToString();
 	}
 	private Test GetTestById(Guid id)
@@ -111,7 +158,25 @@ public class AppUser : BaseEntity
 		Test? test = GetTestById(testId);
 		test.SetQuestionAnswer(questionId, answer, isCorrect);
 	}
+	public List<string> GetLastResults(int count)
+	{
+		if (Tests == null)
+			throw new ArgumentNullException(nameof(Tests));
+		if (!Tests.Any(x => x.Done))
+			throw new Exception("Нет законченных тестов");
 
+		var tests = Tests.OrderByDescending(x => x.CreateDate).Where(x => x.Done).Take(count).ToList();
+		var results = new List<string>();
+		foreach (var test in tests)
+		{
+			results.Add(GetTestResult(test.Id));
+		}
+		return results;
+	}
+	public void SetRole(Role role)
+	{
+		Role = role;
+	}
 }
 
 public enum Role

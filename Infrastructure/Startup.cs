@@ -15,6 +15,7 @@ public static class Startup
 			options.UseSqlite("Data Source=mainbot.db", b => b.MigrationsAssembly("Migrators.Sqlite"));
 		});
 		services.AddTransient<IUserRepository, UserRepository>();
+		services.AddTransient<IResultService, ResultService>();
 		return services;
     }
 }

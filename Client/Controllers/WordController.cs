@@ -13,7 +13,7 @@ public class WordController : BotController
 	public WordController(IUserRepository userRepository) => _userRepository = userRepository;
 
 
-	[Action("/wordmenu", "Управление словарем")]
+	[Action("/wordmenu", "Управление словом")]
 	public async Task AddNewWordAsync()
 	{
 		AppUser user = await _userRepository.GetUserByTelegramId(Context.GetUserId());
@@ -23,7 +23,7 @@ public class WordController : BotController
 		}
 		await Send("Введи слово на английском");
 		var enWord = await AwaitText();
-		var wordEntity = await _userRepository.GetWordByEnVersionAsync(Context.UserId(), enWord);
+		var wordEntity = await _userRepository.GetWordByEnVersionAsync(Context.UserId(), enWord.ToUpper());
 		if(wordEntity == null)
 		{
 			RowButton("Добавить", Q(AddNewWord, enWord));
@@ -42,7 +42,7 @@ public class WordController : BotController
 		await Client.TryDeleteMessageAsync(ChatId, (int)Context.GetCallbackMessageId());
 		await Send("Введи перевод:");
 		var ruVersion = await AwaitText();
-		await _userRepository.AddNewWordToVocabulary(Context.UserId(), enWord, ruVersion);
+		await _userRepository.AddNewWordToVocabulary(Context.UserId(), enWord.ToUpper().Trim(), ruVersion.ToUpper().Trim());
 		await Send("Слово успешно добавлено в словарь!");
 	}
 

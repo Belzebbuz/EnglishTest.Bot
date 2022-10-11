@@ -1,4 +1,5 @@
 ﻿using Client.BotStates;
+using Client.Extensions;
 using Infrastructure.Contracts;
 using System;
 using System.Threading.Tasks;
@@ -24,8 +25,15 @@ public class StartController : BotController
         {
             PushL("/wordmenu - Управление словарем");
             PushL("/tests - режим тестирования");
+            PushL("/results - Получить результаты тестов");
         }
     }
+
+    [On(Handle.ClearState)]
+    public async Task EmptyState()
+    {
+		await Client.TryDeleteMessageAsync(ChatId, Context.Update?.CallbackQuery?.Message?.MessageId);
+	}
 
 	[On(Handle.Unknown)]
 	public async Task Unknown()

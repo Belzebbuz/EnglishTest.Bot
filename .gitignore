@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+Client/mainbot.db
+Client/mainbot.db-shm
+Client/mainbot.db-wal
