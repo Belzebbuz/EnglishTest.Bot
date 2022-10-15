@@ -10,9 +10,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Migrators.Sqlite.Migrations
 {
-	[DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221003082112_init")]
-    partial class init
+    [DbContext(typeof(ApplicationDbContext))]
+    [Migration("20221014061524_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -94,6 +94,12 @@ namespace Migrators.Sqlite.Migrations
                     b.Property<bool>("Done")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("Started")
                         .HasColumnType("INTEGER");
 
@@ -107,13 +113,33 @@ namespace Migrators.Sqlite.Migrations
                     b.ToTable("Tests");
                 });
 
+            modelBuilder.Entity("Domain.Models.VocabularySession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("ChatId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("MessageId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VocabularyOpenHistory");
+                });
+
             modelBuilder.Entity("Domain.Models.Word", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("AppUserId")
+                    b.Property<Guid>("AppUserId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreateDate")
@@ -162,9 +188,13 @@ namespace Migrators.Sqlite.Migrations
 
             modelBuilder.Entity("Domain.Models.Word", b =>
                 {
-                    b.HasOne("Domain.Models.AppUser", null)
+                    b.HasOne("Domain.Models.AppUser", "AppUser")
                         .WithMany("Words")
-                        .HasForeignKey("AppUserId");
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
                 });
 
             modelBuilder.Entity("Domain.Models.AppUser", b =>

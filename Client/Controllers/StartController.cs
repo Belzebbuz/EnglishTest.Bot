@@ -23,9 +23,15 @@ public class StartController : BotController
         }
         else
         {
-            PushL("/wordmenu - Управление словарем");
-            PushL("/tests - режим тестирования");
+            PushL("/wordmenu - Управление словами");
+            PushL("/tests - Режим тестирования");
             PushL("/results - Получить результаты тестов");
+            PushL("/vocabulary- Словарь");
+            if(user.Role == Role.admin)
+            {
+                PushL("/sendnotification - отправить всем уведомление о прохождении теста");
+                PushL("/getallresults - узнать результаты пользователей");
+			}
         }
     }
 

@@ -4,6 +4,8 @@ using Infrastructure.Contracts;
 using Infrastructure.DTOs;
 using Infrastructure.Wrappers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks.Dataflow;
 
 namespace Infrastructure.Repositories;
 public class UserRepository : IUserRepository
@@ -143,5 +145,22 @@ public class UserRepository : IUserRepository
 			.Select(x => $"{x.EnVersion} - {x.RuVersion}").ToListAsync();
 
 		return words;
+	}
+
+	public async Task AddToVocabularyOpenHistory(long chatId, int? messageId)
+	{
+		if (messageId == null)
+			return;
+
+		await _context.VocabularyOpenHistory.AddAsync(new() { ChatId = chatId, MessageId = (int)messageId });
+		await _context.SaveChangesAsync();
+	}
+
+	public async Task<List<int>> ClearVocabularyHistoryAsync(long chatId)
+	{
+		var messages = await _context.VocabularyOpenHistory.Where(x => x.ChatId == chatId).ToListAsync();
+		_context.VocabularyOpenHistory.RemoveRange(messages);
+		await _context.SaveChangesAsync();
+		return messages.Select(x => x.MessageId).ToList();
 	}
 }

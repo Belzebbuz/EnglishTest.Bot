@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Extensions;
 
 namespace Domain.Models;
 
@@ -15,7 +16,7 @@ public class Test : BaseEntity
 		if(Started)
 			throw new Exception($"Test with id {Id} has already been started");
 		Started = true;
-		StartTime = DateTime.Now;
+		StartTime = DateTime.Now.ConvertToMoscowTime();
 	}
 	public void MarkAsDone()
 	{
@@ -24,7 +25,7 @@ public class Test : BaseEntity
 		if (Done)
 			throw new Exception($"Test with id {Id} has already been completed");
 		Done = true;
-		EndTime = DateTime.Now;
+		EndTime = DateTime.Now.ConvertToMoscowTime();
 	}
 	internal Question GetQuestionById(Guid id)
 	{

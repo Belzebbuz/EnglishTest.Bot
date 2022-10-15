@@ -13,11 +13,11 @@ public class CreateUserStateController : BotControllerState<CreateUserState>
 	{
 		try
 		{
-			await Send("Для нужно пройти регистрацию.");
+			await Send("Для начала работы нужно пройти регистрацию.");
 			await Send("Введите имя:");
 			var name = await AwaitText();
 			await _userRepository.CreateUserAsync(Context.GetUsername(), name, Context.GetUserId(), ChatId);
-			await Send("Ты успешно прошел регистрацию!\n/wordmenu - Управление словарем\n/tests - режим тестирования");
+			await Send("Ты успешно прошел регистрацию!\n/start - Узнать воможности");
 		}
 		finally
 		{

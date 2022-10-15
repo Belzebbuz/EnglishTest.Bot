@@ -111,13 +111,33 @@ namespace Migrators.Sqlite.Migrations
                     b.ToTable("Tests");
                 });
 
+            modelBuilder.Entity("Domain.Models.VocabularySession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("ChatId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("MessageId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VocabularyOpenHistory");
+                });
+
             modelBuilder.Entity("Domain.Models.Word", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("AppUserId")
+                    b.Property<Guid>("AppUserId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreateDate")
@@ -166,9 +186,13 @@ namespace Migrators.Sqlite.Migrations
 
             modelBuilder.Entity("Domain.Models.Word", b =>
                 {
-                    b.HasOne("Domain.Models.AppUser", null)
+                    b.HasOne("Domain.Models.AppUser", "AppUser")
                         .WithMany("Words")
-                        .HasForeignKey("AppUserId");
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
                 });
 
             modelBuilder.Entity("Domain.Models.AppUser", b =>

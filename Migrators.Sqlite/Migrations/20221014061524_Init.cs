@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Migrators.Sqlite.Migrations
 {
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -27,11 +27,27 @@ namespace Migrators.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "VocabularyOpenHistory",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    MessageId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ChatId = table.Column<long>(type: "INTEGER", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VocabularyOpenHistory", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tests",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     UserId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    StartTime = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Started = table.Column<bool>(type: "INTEGER", nullable: false),
                     Done = table.Column<bool>(type: "INTEGER", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false)
@@ -52,9 +68,9 @@ namespace Migrators.Sqlite.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    AppUserId = table.Column<Guid>(type: "TEXT", nullable: false),
                     EnVersion = table.Column<string>(type: "TEXT", nullable: false),
                     RuVersion = table.Column<string>(type: "TEXT", nullable: false),
-                    AppUserId = table.Column<Guid>(type: "TEXT", nullable: true),
                     CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -64,7 +80,8 @@ namespace Migrators.Sqlite.Migrations
                         name: "FK_Words_Users_AppUserId",
                         column: x => x.AppUserId,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -120,6 +137,9 @@ namespace Migrators.Sqlite.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Questions");
+
+            migrationBuilder.DropTable(
+                name: "VocabularyOpenHistory");
 
             migrationBuilder.DropTable(
                 name: "Tests");

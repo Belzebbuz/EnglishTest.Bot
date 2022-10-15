@@ -35,7 +35,7 @@ public class AdminController : BotController
 	{
 		foreach (var user in await _userRepository.GetAllUsersAsync())
 		{
-			await Client.SendTextMessageAsync(user.ChatId, "/tests - нужно пройти тест!");
+			await Client.SendTextMessageAsync(user.ChatId, "/tests - нужно пройти тест на 10 случайных слов!");
 		}
 	}
 }

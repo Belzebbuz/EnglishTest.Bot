@@ -21,13 +21,20 @@ public class TestsController : BotController
 		{
 			await GlobalState(new CreateUserState());
 		}
+		if (!user!.Words.Any())
+		{
+			await Send("Не добавлено еще не одного слова!\n/wordmenu - управление словами");
+			return;
+		}
 		RowButton("10 Случайных слов",Q(StartRandomTestAsync));
 		RowButton("Последние слова",Q(GenerateTestAsync));
 		await Send("Выберите режим тестирования");
+		await DeleteVocabularyMessagesAsync();
 	}
 	[Action]
 	private async Task GenerateTestAsync()
 	{
+
 		await Client.TryDeleteMessageAsync(ChatId, Context.GetCallbackMessageId());
 		await Send("Сколько последних добавленных слов использовать в тесте?");
 		var countText = await AwaitText();
@@ -39,6 +46,15 @@ public class TestsController : BotController
 		else
 		{
 			await Send("Нужно указать число!");
+		}
+	}
+
+	private async Task DeleteVocabularyMessagesAsync()
+	{
+		var messages = await _userRepository.ClearVocabularyHistoryAsync(ChatId);
+		foreach (var messageId in messages)
+		{
+			await Client.TryDeleteMessageAsync(ChatId,messageId);
 		}
 	}
 

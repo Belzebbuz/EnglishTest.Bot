@@ -9,7 +9,6 @@ public class Word : BaseEntity
 		EnVersion = enVersion;
 		RuVersion = ruVersion;
 	}
-	public Guid AppUserId { get; set; }
 	public AppUser AppUser { get; private set; }
 	public string EnVersion { get; private set; }
 	public string RuVersion { get; private set; }

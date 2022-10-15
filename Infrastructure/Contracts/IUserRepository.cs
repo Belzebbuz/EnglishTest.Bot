@@ -7,6 +7,8 @@ namespace Infrastructure.Contracts;
 public interface IUserRepository
 {
 	Task AddNewWordToVocabulary(long userId, string enWord, string ruVersion);
+	Task AddToVocabularyOpenHistory(long chatId, int? messageId);
+	Task<List<int>> ClearVocabularyHistoryAsync(long chatId);
 	Task<TestDTO> CreateRandomTestAsync(long userId, int count);
 	Task<TestDTO> CreateTestAsync(long userId, int count);
 	Task CreateUserAsync(string? userName, string name, long userId, long chatId);

@@ -22,7 +22,8 @@ public class ResultsController : BotController
 		List<AppUserDTO> users = await _userRepository.GetAllUsersAsync();
 		foreach (var user in users)
 		{
-			RowButton(user.FullName, Q(GetUsersResult, user.TgUserId));
+			var buttonText = user.UserName == null ? user.FullName : $"{user.FullName} - {user.UserName}";
+			RowButton(buttonText, Q(GetUsersResult, user.TgUserId));
 		}
 		await Send("Пользователи: ");
 	}

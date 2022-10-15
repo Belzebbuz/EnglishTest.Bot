@@ -1,14 +1,16 @@
 ﻿using Client.BotStates;
+using Client.Extensions;
 using Infrastructure.Contracts;
 using Infrastructure.Wrappers;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Telegram.Bot;
 
 namespace Client.Controllers;
 
 public class VocabularyController : BotController
 {
 	private readonly IUserRepository _userRepository;
-	private const int _pageSize = 10;
+	private const int _pageSize = 15;
 	public VocabularyController(IUserRepository userRepository) => _userRepository = userRepository;
 
 	[Action("/vocabulary", "Словарь")]
@@ -47,5 +49,10 @@ public class VocabularyController : BotController
 				RowButton(">>>", Q(SendWordsByPages, pagination.NextPage));
 			}
 		}
+
+		await _userRepository.AddToVocabularyOpenHistory(ChatId, 
+			Context.Update.Type == Telegram.Bot.Types.Enums.UpdateType.Message ? 
+			Context.GetSafeMessageId() + 1 :
+			Context.GetCallbackMessageId());
 	}
 }
